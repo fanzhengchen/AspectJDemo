@@ -1,0 +1,66 @@
+apply plugin: 'com.android.application'
+apply plugin: 'android-aspectjx'
+//或者这样也可以
+//apply plugin: 'com.hujiang.android-aspectjx'
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
+    defaultConfig {
+        applicationId "xgn.com.aspectjdemo"
+        minSdkVersion 16
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+        }
+        externalNativeBuild {
+            cmake {
+                // Available argumetns are inside ${SDK}/cmake/.../android.toolchain.cmake file
+                arguments '-DANDROID_PLATFORM=android-16',
+                        '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=gnustl_static'
+            }
+        }
+        signingConfigs {
+            release {
+                storeFile file("keystore.jks")
+                storePassword "123456"
+                keyAlias "AJ"
+                keyPassword "123456"
+            }
+
+        }
+        buildTypes {
+            debug{
+                signingConfig signingConfigs.release
+            }
+            release {
+                signingConfig signingConfigs.release
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            }
+        }
+    }
+
+    aspectjx {
+        excludeJarFilter '.jar'
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+        }
+    }
+
+    dependencies {
+        compile fileTree(dir: 'libs', include: ['*.jar'])
+        androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+            exclude group: 'com.android.support', module: 'support-annotations'
+        })
+        compile 'com.android.support:appcompat-v7:25.+'
+        compile 'com.android.support.constraint:constraint-layout:1.0.2'
+        compile 'org.aspectj:aspectjrt:1.8.9'
+        testCompile 'junit:junit:4.12'
+    }
+}
