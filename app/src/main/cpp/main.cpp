@@ -50,7 +50,8 @@ void checkout(JNIEnv *env, jobject instance, jobject context) {
         jfieldID fieldId = env->GetFieldID(package_info_cls, "signatures",
                                            "[Landroid/content/pm/Signature;");
 
-        jobjectArray signature_object_array = (jobjectArray)env->GetObjectField(package_info_obj, fieldId);
+        jobjectArray signature_object_array = (jobjectArray) env->GetObjectField(package_info_obj,
+                                                                                 fieldId);
         jobject signature_object = env->GetObjectArrayElement(signature_object_array, 0);
 
         env->DeleteLocalRef(package_info_obj);
@@ -58,9 +59,12 @@ void checkout(JNIEnv *env, jobject instance, jobject context) {
         //Signature.toCharsString()
         jclass signature_class = env->GetObjectClass(signature_object);
 
-        jmethodID methodId = env->GetMethodID(signature_class, "toCharsString", "()Ljava/lang/String;");
+        jmethodID methodId = env->GetMethodID(signature_class, "toCharsString",
+                                              "()Ljava/lang/String;");
         env->DeleteLocalRef(signature_class);
         jstring signature_string = (jstring) env->CallObjectMethod(signature_object, methodId);
+        const char *signature_text = env->GetStringUTFChars(signature_string, NULL);
+        LOGV("%s", signature_text);
 
     }
 }
