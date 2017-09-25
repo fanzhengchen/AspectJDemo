@@ -24,7 +24,8 @@ public class App extends Application {
             PackageManager packageManager = getPackageManager();
             PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
             Signature[] signatures = packageInfo.signatures;
-            Log.d("wwwwwwwwwwwww", "" + signatures[0].toChars().hashCode());
+            Log.d("wwwwwwwwwwwww", "" + signatures[0].toCharsString() + " " + signatures[0].toCharsString().length());
+
         } catch (Exception e) {
             e.printStackTrace();
         }

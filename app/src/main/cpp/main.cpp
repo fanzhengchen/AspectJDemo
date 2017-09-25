@@ -7,11 +7,12 @@
 #include <assert.h>
 #include <android/log.h>
 #include <cstdio>
+#include <string>
 
 #define TAG "MAIN_CPP"
 #define JNI_CLASS "xgn/com/aspectjdemo/Check"
 #define LOGV(...) \
-    (__android_log_print(ANDROID_LOG_DEBUG,TAG, __VA_ARGS__))
+    (__android_log_print(ANDROID_LOG_ERROR,TAG, __VA_ARGS__))
 
 void checkout(JNIEnv *env, jobject instance, jobject context);
 
@@ -45,8 +46,8 @@ void checkout(JNIEnv *env, jobject instance, jobject context) {
                                                      "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;");
         jobject package_info_obj = env->CallObjectMethod(package_manager_obj, package_info_id,
                                                          package_name_obj, 64);
-
         jclass package_info_cls = env->GetObjectClass(package_info_obj);
+
         jfieldID fieldId = env->GetFieldID(package_info_cls, "signatures",
                                            "[Landroid/content/pm/Signature;");
 
@@ -54,18 +55,24 @@ void checkout(JNIEnv *env, jobject instance, jobject context) {
                                                                                  fieldId);
         jobject signature_object = env->GetObjectArrayElement(signature_object_array, 0);
 
-        env->DeleteLocalRef(package_info_obj);
-
-        //Signature.toCharsString()
         jclass signature_class = env->GetObjectClass(signature_object);
 
         jmethodID methodId = env->GetMethodID(signature_class, "toCharsString",
                                               "()Ljava/lang/String;");
-        env->DeleteLocalRef(signature_class);
         jstring signature_string = (jstring) env->CallObjectMethod(signature_object, methodId);
         const char *signature_text = env->GetStringUTFChars(signature_string, NULL);
-        LOGV("%s", signature_text);
-
+        std::string text = std::string(signature_text);
+        LOGV("PPP%sPPPP\n", signature_text);
+        LOGV("PPP%sPPP\n", text.c_str());
+        env->DeleteLocalRef(package_info_obj);
+        env->DeleteLocalRef(package_info_cls);
+        env->DeleteLocalRef(package_name_obj);
+        env->DeleteLocalRef(package_manager_obj);
+        env->DeleteLocalRef(package_manager_cls);
+        env->DeleteLocalRef(signature_class);
+        env->DeleteLocalRef(signature_object);
+        env->DeleteLocalRef(signature_object_array);
+        env->DeleteLocalRef(signature_string);
     }
 }
 
